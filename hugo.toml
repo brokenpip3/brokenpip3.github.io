@@ -1,4 +1,4 @@
-baseURL = "http://www.brokenpip3.com"
+baseURL = "https://www.brokenpip3.com"
 languageCode = 'en'
 title = "Life is too short to be someone else"
 theme = "Hugo Ficurinia"
