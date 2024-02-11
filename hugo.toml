@@ -21,6 +21,10 @@ summaryLength = 40
     enableSearch = true
     articleSummary = true
     fitImageInArticlePreview = false
+    paperCards = true
+    tagsInArticlePreview = false
+    gridView = false
+    enableShadow = true
 
 [markup]
     [markup.highlight]
@@ -31,9 +35,7 @@ summaryLength = 40
         tabWidth = 4
         style = "gruvbox-dark"
     [markup.tableOfContents]
-        endLevel = 5
         ordered = false
-        startLevel = 1
 
 [menu]
     [[menu.icons]]
