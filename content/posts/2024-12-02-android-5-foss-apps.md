@@ -3,6 +3,7 @@ title = '5 F-droid apps that will change your android experience for good'
 date = 2024-02-11T00:53:20+01:00
 draft = "false"
 toc = "true"
+tags = [ "sandroid", "f-droid", "foss", "newpipe", "termux", "aegis", "habits"]
 +++
 
 It's been a while since every time I need a general-purpose app, I always investigate which FOSS alternatives are present in F-Droid before the Google Play Store. Today, I'm going to present five of these software options that are changing my experience as an Android user, and I hope they will change yours as well.
@@ -12,7 +13,7 @@ It's been a while since every time I need a general-purpose app, I always invest
 
 ![F-droid](/images/5-fdroid-apps/fdroid-logo.png)
 
-F-Droid is a privacy-focused alternative to the Google Play Store. It's a community-driven repository that exclusively hosts free and open-source Android apps. Unlike the Play Store, F-Droid apps prioritize user privacy, with no ads or tracking in the store, but also provides transparency through the [Anti-Features](https://f-droid.org/en/docs/Anti-Features/) system, which highlights any features in apps that may compromise user privacy or freedom.
+F-Droid is a privacy-focused alternative to the Google Play Store. It's a community-driven repository that exclusively hosts open-source android apps. Unlike the Play Store, F-Droid apps prioritize user privacy, with no ads or tracking in the store, but also provides transparency through the [Anti-Features](https://f-droid.org/en/docs/Anti-Features/) system, which highlights any features in apps that may compromise user privacy or freedom.
 You can download the apk from the official [site](https://f-droid.org/) and [verify](https://f-droid.org/docs/Verifying_Downloaded_APK/) it.
 
 ## Newpipe
@@ -24,7 +25,7 @@ You can download the apk from the official [site](https://f-droid.org/) and [ver
 * [Code](https://github.com/TeamNewPipe/NewPipe/)
 * [Donate](https://liberapay.com/TeamNewPipe/)
 
-My life would probably be different without `Newpipe`. No joking: Newpipe is **the** F-Droid app that everyone should try. It offers the authentic YouTube experience without any compromise (i.e., ads, sending data to Google). And any feature is supported **without the need for YouTube or any other kind of profile**. Let's see some of them:
+My life would probably be different without `newpipe`. No joking: Newpipe is **the** F-Droid app that everyone should try. It offers the authentic YouTube experience without any compromise (i.e., ads, sending data to Google). And any feature is supported **without the need for YouTube or any other kind of profile**. Let's see some of them:
 
 * Listen to audio in the background and switch to video anytime (this is the killer feature that will transform any video into a podcast).
 * Zero ads or tracking.

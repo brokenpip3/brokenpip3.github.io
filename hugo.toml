@@ -3,14 +3,14 @@ languageCode = 'en'
 title = "Life is too short to be someone else"
 theme = "Hugo Ficurinia"
 defaultContentLanguage = "en"
-copyright = "[brokenpip3](https://github.com/brokenpip3)"
+copyright = "Author:[brokenpip3](https://github.com/brokenpip3) built with `nix` and `hugo`, [source code](https://github.com/brokenpip3/brokenpip3.github.io)"
 
 paginate = 9
 summaryLength = 40
 
 [params]
     author = "brokenpip3"
-    description = "Something cleaver"
+    description = "<insert here something cleaver>"
 
     logo = "/logo.png"
     logoAltText = "Logo"
@@ -44,7 +44,7 @@ summaryLength = 40
     [[menu.icons]]
         identifier = "email"
         name = "Mail"
-        url = "brokenpip3[at]gmail[dot]com"
+        url = "mailto:brokenpip3[at]gmail[dot]com"
         weight = 20
     [[menu.icons]]
         identifier = "matrix"
