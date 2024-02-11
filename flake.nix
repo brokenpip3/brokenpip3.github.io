@@ -18,6 +18,8 @@
         # from https://ilanjoselevich.com/blog/building-websites-using-nix-flakes-and-zola/
         # dynamic read theme name (easy to switch)
         themeName = ((builtins.fromTOML (builtins.readFile "${theme}/theme.toml")).name);
+        baseUrl = ((builtins.fromTOML (builtins.readFile ./hugo.toml)).baseURL);
+
       in
       {
         # Nix fmt
@@ -43,7 +45,7 @@
             [ -L "themes/${themeName}" ] && unlink "themes/${themeName}" || true
             ln -s ${theme} "themes/${themeName}"
           '';
-          buildPhase = "${pkgs.hugo}/bin/hugo";
+          buildPhase = "${pkgs.hugo}/bin/hugo --minify --baseURL ${baseUrl}";
           installPhase = "cp -r public $out";
         };
 
