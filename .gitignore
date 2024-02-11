@@ -1,0 +1,5 @@
+_drafts
+# theme will be added at runtime via flake devshell/build
+themes
+resources
+.hugo*

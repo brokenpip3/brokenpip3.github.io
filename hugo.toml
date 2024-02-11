@@ -1,0 +1,53 @@
+baseURL = "http://www.brokenpip3.com"
+languageCode = 'en'
+title = "Life is too short to be someone else"
+theme = "Hugo Ficurinia"
+defaultContentLanguage = "en"
+copyright = "[brokenpip3](https://github.com/brokenpip3)"
+
+paginate = 9
+summaryLength = 40
+
+[params]
+    author = "brokenpip3"
+    description = "Something cleaver"
+
+    logo = "/logo.png"
+    logoAltText = "Logo"
+    favicon = "/favicon.png"
+    faviconIco = "/favicon.ico"
+    appletouch = "/apple-touch-icon.png"
+    logoRightOfTitle = false
+    enableSearch = true
+    articleSummary = true
+    fitImageInArticlePreview = false
+
+[markup]
+    [markup.highlight]
+        codeFences = true
+        guessSyntax = true
+        lineNos = false
+        lineNumbersInTable = false
+        tabWidth = 4
+        style = "gruvbox-dark"
+    [markup.tableOfContents]
+        endLevel = 5
+        ordered = false
+        startLevel = 1
+
+[menu]
+    [[menu.icons]]
+        identifier = "github"
+        name = "Github"
+        url = "https://github.com/brokenpip3"
+        weight = 10
+    [[menu.icons]]
+        identifier = "email"
+        name = "Mail"
+        url = "brokenpip3[at]gmail[dot]com"
+        weight = 20
+    [[menu.icons]]
+        identifier = "matrix"
+        name = "Matrix"
+        url = "@brokenpip3:matrix.org"
+        weight = 30
