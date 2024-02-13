@@ -19,7 +19,6 @@
         # dynamic read theme name (easy to switch)
         themeName = ((builtins.fromTOML (builtins.readFile "${theme}/theme.toml")).name);
         baseUrl = ((builtins.fromTOML (builtins.readFile ./hugo.toml)).baseURL);
-
       in
       {
         # Nix fmt

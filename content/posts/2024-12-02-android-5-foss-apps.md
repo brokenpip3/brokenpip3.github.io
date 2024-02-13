@@ -115,7 +115,7 @@ Loop Habit Tracker is a simple and intuitive habit tracking app designed to addr
 * [Fdroid store page](https://f-droid.org/en/packages/com.noahjutz.gymroutines/)
 * [Official site](https://noahjutz.com/gymroutines/)
 * [Code](https://github.com/NoahJutz/GymRoutines)
-* [Donate](https://noahjutz.com/donate/) (currently suspended)
+* [Donate](https://liberapay.com/noahjutz) (currently suspended)
 
 When dealing with gym exercises, wasting time subscribing to vendor apps or writing exercises down with pen and paper is not ideal.
 
