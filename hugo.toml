@@ -21,7 +21,7 @@ summaryLength = 40
     enableSearch = true
     articleSummary = true
     fitImageInArticlePreview = false
-    paperCards = true
+    paperCards = false
     tagsInArticlePreview = false
     gridView = false
     enableShadow = true
@@ -37,7 +37,8 @@ summaryLength = 40
         lineNos = false
         lineNumbersInTable = false
         tabWidth = 4
-        style = "gruvbox-dark"
+        style = "gruvbox"
+        #style = "xcode-dark"
     [markup.tableOfContents]
         ordered = false
 

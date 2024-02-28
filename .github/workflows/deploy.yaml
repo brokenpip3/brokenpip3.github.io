@@ -25,9 +25,12 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - uses: cachix/install-nix-action@v22
+      - uses: DeterminateSystems/nix-installer-action@v9
         with:
-          github_access_token: ${{ secrets.GITHUB_TOKEN }}
+          diagnostic-endpoint: ""
+      - uses: DeterminateSystems/magic-nix-cache-action@v3
+        with:
+          diagnostic-endpoint: ""
       - name: nix checks
         run: nix flake check
       - name: nix build
