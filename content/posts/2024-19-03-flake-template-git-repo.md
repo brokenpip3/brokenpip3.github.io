@@ -84,7 +84,7 @@ wrote: /tmp/template-test/test/foo
 
 While browsing the [documentation](https://nixos.org/manual/nix/stable/command-ref/new-cli/nix3-flake-init.html#template-definitions), I discovered that we can also pass a welcome text in `welcomeText` that will be displayed while initializing the template. And markdown is supported! Let's see one of the default examples:
 
-![rust-example](../images/nix-flake-template/rust-welcome-text-example.png)
+![rust-example](/images/nix-flake-template/rust-welcome-text-example.png)
 
 Cool!
 
