@@ -88,6 +88,21 @@ While browsing the [documentation](https://nixos.org/manual/nix/stable/command-r
 
 Cool!
 
+To add it to our template we can just add `welcomeText`
+
+```nix
+welcomeText = ''
+  # Markdown text here
+  - list
+'';
+```
+
+or even better we can use `builtins.readFile` to read it directly from the template README.md file:
+
+```nix
+welcomeText = builtins.readFile templates/base-with-flake/README.md;
+```
+
 ## Discovery #2: Diffing
 
 While testing this feature, I discovered that not only is it copying all the files in the template, but it is also able to diff and understand if a file was changed:
