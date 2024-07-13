@@ -75,16 +75,16 @@
     },
     "nixpkgs": {
       "locked": {
-        "lastModified": 1711460390,
-        "narHash": "sha256-akSgjDZL6pVHEfSE6sz1DNSXuYX6hq+P/1Z5IoYWs7E=",
+        "lastModified": 1720691131,
+        "narHash": "sha256-CWT+KN8aTPyMIx8P303gsVxUnkinIz0a/Cmasz1jyIM=",
         "owner": "nixos",
         "repo": "nixpkgs",
-        "rev": "44733514b72e732bd49f5511bd0203dea9b9a434",
+        "rev": "a046c1202e11b62cbede5385ba64908feb7bfac4",
         "type": "github"
       },
       "original": {
         "owner": "nixos",
-        "ref": "nixos-23.11",
+        "ref": "nixos-24.05",
         "repo": "nixpkgs",
         "type": "github"
       }
@@ -184,17 +184,17 @@
     "theme": {
       "flake": false,
       "locked": {
-        "lastModified": 1702661368,
-        "narHash": "sha256-6fAI1615lUbPmHqBtjBAkIUlJwHfxhmG2w0PcbJYk2s=",
+        "lastModified": 1719144341,
+        "narHash": "sha256-l+5c4JU+kpoJNs9S2koY/RgHFJSZOa7FbprBBvkDeGI=",
         "owner": "gabmus",
         "repo": "hugo-ficurinia",
-        "rev": "e681e6583286eeca1035bedeecb0a802cb824045",
+        "rev": "1b986165b84121be4f28382e8c6bc2408c5baa33",
         "type": "gitlab"
       },
       "original": {
         "owner": "gabmus",
         "repo": "hugo-ficurinia",
-        "rev": "e681e6583286eeca1035bedeecb0a802cb824045",
+        "rev": "1b986165b84121be4f28382e8c6bc2408c5baa33",
         "type": "gitlab"
       }
     }

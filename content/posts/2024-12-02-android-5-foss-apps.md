@@ -3,7 +3,7 @@ title = '5 F-droid apps that will change your android experience for good'
 date = 2024-02-11T00:53:20+01:00
 draft = "false"
 toc = "true"
-tags = [ "sandroid", "f-droid", "foss", "newpipe", "termux", "aegis", "habits"]
+tags = [ "android", "f-droid", "foss", "newpipe", "termux", "aegis", "habits"]
 +++
 
 It's been a while since every time I need a general-purpose app, I always investigate which FOSS alternatives are present in F-Droid before the Google Play Store. Today, I'm going to present five of these software options that are changing my experience as an Android user, and I hope they will change yours as well.
