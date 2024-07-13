@@ -61,7 +61,7 @@ on linux_amd64
 
 ### Flake
 
-What if we want to help the team gently migrate to Nix, or better yet, let people use their preferred tools and switch between them as they like?
+What if we want to help the team gently migrate to Nix, or better let people use their preferred tools and switch between them as they like?
 
 Let's use the `flake` command:
 
@@ -97,6 +97,8 @@ $ nix run github:brokenpip3/asdf2nix -- flake
 }
 ```
 
+This command will generate a flake file for you based on the `.tools-version` with the same ([except sometimes the minor](https://github.com/brokenpip3/asdf2nix?tab=readme-ov-file#limitations)) version that you have in the `asdf` file.
+
 We can save it and add a direnv file that will trigger the flake devshell only in case you have nix installed in the system:
 
 ```bash
@@ -130,13 +132,13 @@ For me, the real selling point of Nix was [`home-manager`](https://github.com/ni
 
 [Home-manager](https://github.com/nix-community/home-manager) gives me most of the Nix functionalities on any linux distribution (and macOS, and one day even [natively](https://github.com/NixOS/nix/pull/8901) on windows) and covers 90% of my as-code needs.
 
-However, one thing I miss from NixOS, besides the ability to roll back the entire system, is the ability to build a remote system. If you're not familiar with how it works, you can simply build a remote system described in your flake from the machine where you are running the command, like this:
+However, one thing I miss from NixOS, besides the ability to roll back the entire system, is the ability to build/switch to/from remote system. If you're not familiar with how it works, you can simply build a remote system described in your flake from the machine where you are running the command, like this:
 
 ```bash
 nixos-rebuild --target-host vpsuser@foobar.com switch
 ```
 
-This will build the target system locally, copy the necessary closure, and deploy it via SSH. It's a great way to keep your system updated from a single flake when you need to change some configurations or update your packages.
+This will build the target system locally, copy the necessary closure, and deploy it via SSH. It's a great way to keep your system updated from a single flake when you need to change some configurations or update your packages ([this](https://nixcademy.com/posts/nixos-rebuild-remote-deployment/) a good showcase article).
 
 At the same time, there are multiple systems where I still do not have NixOS installed, either because I can't (e.g., a company laptop running Ubuntu) or because I still need to find the time to rebuild them as code, like my VPS with k8s nodes.
 
