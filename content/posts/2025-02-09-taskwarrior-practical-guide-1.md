@@ -508,7 +508,6 @@ We need to first complete the documentation for our ltd so we can form our compa
 Let's translate this into taskwarrior:
 
 ```bash
-7 tasks
 $ task 2 3 modify depends:6
 This command will alter 2 tasks.
 Modifying task 2 'buy bylwy.com domain'.
