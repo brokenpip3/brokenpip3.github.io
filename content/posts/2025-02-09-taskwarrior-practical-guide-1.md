@@ -1,16 +1,16 @@
 +++
-title = 'Taskwarrior pratical guide #1 - tags, projects and dependencies'
+title = 'Taskwarrior practical guide #1 - tags, projects and dependencies'
 date = 2025-02-09T23:52:49+01:00
 draft = false
 toc = true
-tags = ["taskwarrior", "cli", "productivity", "pratical-guide"]
+tags = ["taskwarrior", "cli", "productivity", "practical-guide"]
 +++
 
 Yes, I know, there are plenty of options in the universe for a todo app.
 
 How many times have you heard someone say something like: <<You should try this new shiny encrypted local-first connected social AI-driven todo app that will boost your productivity!>>
 
-![sounds familiar](/images/taskwarrior-pratical-guide/todo-dream.png "best todo list ever")
+![sounds familiar](/images/taskwarrior-practical-guide/todo-dream.png "best todo list ever")
 
 <center><i>Sound familiar, right?</i></center>
 
@@ -39,7 +39,7 @@ So, why a cli?
 Because it’s handy: it can be used via SSH, piped into other tools, summoned at any moment or spot on my screen,
 and in the specific case of Taskwarrior, it’s super extensible (I will talk more about this in the next post of this guide).
 
-![hackerman](/images/taskwarrior-pratical-guide/hackerman2.png "great series btw")
+![hackerman](/images/taskwarrior-practical-guide/hackerman2.png "great series btw")
 
 <center><i>Using only terminal apps for everything feels like</i></center>
 
