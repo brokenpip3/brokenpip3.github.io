@@ -2,11 +2,11 @@
   description = "brokenpip3 blog";
 
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs/nixos-24.05";
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-24.11";
     flake-utils.url = "github:numtide/flake-utils";
     pre-commit-hooks.url = "github:cachix/pre-commit-hooks.nix";
     theme = {
-      url = "gitlab:gabmus/hugo-ficurinia/1b986165b84121be4f28382e8c6bc2408c5baa33";
+      url = "gitlab:gabmus/hugo-ficurinia/8ef7af78c9afa0b1097f6854623bfc59b23f40d7";
       flake = false;
     };
   };

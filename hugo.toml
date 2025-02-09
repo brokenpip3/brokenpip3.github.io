@@ -5,7 +5,7 @@ theme = "Hugo Ficurinia"
 defaultContentLanguage = "en"
 copyright = "Author:[brokenpip3](https://github.com/brokenpip3) built with `nix` and `hugo`, [source code](https://github.com/brokenpip3/brokenpip3.github.io)"
 
-paginate = 9
+pagination.pagerSize= 9
 summaryLength = 40
 
 [params]
@@ -23,6 +23,9 @@ summaryLength = 40
     fitImageInArticlePreview = false
     paperCards = false
     tagsInArticlePreview = false
+    enableShareOnFediverse = false
+    enableSidebarLayout = false
+    tocInSidebar = false
     gridView = false
     enableShadow = true
     # Oss, gdpr compliant and privacy focused analytics
@@ -31,16 +34,21 @@ summaryLength = 40
     umamiWebsiteId = "8724b44d-ed2e-4d4e-9d7f-68ca222490b4"
 
 [markup]
+[markup.goldmark.renderer]
+unsafe= true
+
     [markup.highlight]
         codeFences = true
         guessSyntax = true
         lineNos = false
         lineNumbersInTable = false
         tabWidth = 4
-        style = "gruvbox"
-        #style = "xcode-dark"
+        #style = "gruvbox"
+        style = "xcode-dark"
+        #syntax = "witchhazel"
     [markup.tableOfContents]
         ordered = false
+
 
 [menu]
     [[menu.icons]]
