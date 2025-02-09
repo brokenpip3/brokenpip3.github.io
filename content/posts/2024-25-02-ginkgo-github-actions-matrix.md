@@ -6,8 +6,6 @@ toc = "true"
 tags = [ "kubernetes", "golang", "tests", "ginkgo", "github-actions", "hack"]
 +++
 
-![image](https://onsi.github.io/ginkgo/images/ginkgo.png)
-
 If you've ever dabbled in writing or maintaining a Kubernetes operator using kubebuilder or operator-framework, you'll surely know what **Ginkgo** is.
 
 For everyone else: **Ginkgo** (paired with **Gomega**) it's the default kubebuilder/operator-framework suite for writing integration/e2e tests.
@@ -16,6 +14,8 @@ And most likely, you've also worked with this framework in GitHub Actions and no
 Nothing irreparable, of course, but when you have a single flaky test, it can consume all your time and invalidate the entire pipeline.
 
 ## Getting to know Ginkgo better
+
+![image](https://onsi.github.io/ginkgo/images/ginkgo.png)
 
 While studying the framework for an [operator](https://github.com/jenkinsci/kubernetes-operator) I am currently maintaining, I came across an important [statement](https://onsi.github.io/ginkgo/#mental-model-ginkgo-assumes-specs-are-independent) in the documentation:
 
