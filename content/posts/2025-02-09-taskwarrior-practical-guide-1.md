@@ -549,6 +549,6 @@ The tasks that are dependent on other tasks received negative points because we 
 
 Are you enjoying taskwarrior, like I do, so far? I hope so.
 
-In the next part (don't miss it) of this practical guide, we are going to talk about more advanced topics around sorting our tasks by urgency, adding due and schedule dates, creating customer reports, and using hooks to automate our taskwarrior experience.
+In the next part (don't miss it) of this practical guide, we are going to talk about more advanced topics around sorting our tasks by urgency, adding due and schedule dates, creating custom reports, and using hooks to automate our taskwarrior experience.
 
 Stay tuned!
