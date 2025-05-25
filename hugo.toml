@@ -28,6 +28,9 @@ summaryLength = 40
     tocInSidebar = false
     gridView = false
     enableShadow = true
+    fontFamily = "Space Grotesk"
+    titleFontFamily = "Space Grotesk"
+    #monospaceFontFamily = "JetBrains Mono, monospace"
     # Oss, gdpr compliant and privacy focused analytics
     # "All data is anonymized and no personal data is ever collected. Cookie banners not required"
     umamiScriptUrl = "https://eu.umami.is/script.js"
@@ -43,9 +46,11 @@ unsafe= true
         lineNos = false
         lineNumbersInTable = false
         tabWidth = 4
-        #style = "gruvbox"
-        style = "xcode-dark"
+        style = "gruvbox"
+        #style = "xcode-dark"
+        noClasses = true
         #syntax = "witchhazel"
+        #style = "github"
     [markup.tableOfContents]
         ordered = false
 
