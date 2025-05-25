@@ -1,55 +1,49 @@
 +++
 title = 'Nixos encrypted installation with kexec, disko, luks, btrfs and remote luks unblock on a Hetzner auction server (or any cloud provider vps/vds)'
-date = 2025-05-05T23:02:08+02:00
+date = 2025-05-25T23:02:08+02:00
 draft = false
 toc = true
+tags = [ "nix", "flakes", "hetnzer", "kexec", "disko", "luks", "btrfs", "vps"]
 +++
 
-Recently I bought a Hetzner auction server and I wanted to do a secure installation with disk encryption,
-like I always do for my vps (even if this one is a bare metal one) and I did it using nixos with disko and flakes.
+Recently I bought a Hetzner auction server and I wanted to do a secure installation with disk encryption, like I always do for my vps (even though this one is a bare metal server), and I did it using nixos, disko, and flakes, taking the “hard way” approach. I decided to share the whole process in case it might be helpful for someone else.
 
-> This guide is intended for Hetzner auction servers but it should work on any cloud provider vps/vds, even if the cloud
-provider does not support nixos as a base image, will try to do some generic disgression in case you want to follow it
-in a different cloud provider.
+> ⚠️ while focused on Hetzner auction servers, this guide should adapt to any cloud provider vps/vds, even those without native nixos support. I’ll try to include all the information and generic digression you may need to understand each step and use it with a different local/cloud provider.
 
-## Hetzner auction server and limitations that will drive this guide
+## Introduction
 
-If you don't know what a Hetzner auction server it's basically customized server that has been used by someone else and
-now, after the previous owner has finished using it, you can buy it for a low price compared to the same server but new.
-If want to take a look you can find the official page [here](https://www.hetzner.com/sb) even if my suggestion is to use
-this alternative community [site](https://hetzner-value-auctions.cnap.tech/) with a better user experience and filters
-that you can use to find the server you want.
+### Hetzner auction server and limitations that will drive this guide
 
-![hetzner auction website](/images/nixos-installation-hetzner/secondhand.jpg "let's check the near to expire corner")
+If you don't know what a Hetzner auction server is, it's essentially a refurbished server that was previously used by someone else.
+After the original owner finishes using it, you can purchase it at a lower price than an equivalent new server. You can find the official page [here](https://www.hetzner.com/sb), though I recommend using this alternative community [site](https://hetzner-value-auctions.cnap.tech/) which offers better filtering and user experience for finding your ideal server.
 
-<center><i>the hetzner auction farm</i></center>
+![hetzner auction website](/images/nixos-installation-hetzner/secondhand.png "let's check the near to expire corner")
 
-Now low prices also comes with some limitations and one of them is that you can't use any custom image, you don't have
-a *stable* console access and you can't use the rescue system to boot from a custom image. These are a bit challenging
-starting points (especially the absence of a always present console) but not impossible to overcome.
-Let's do it with kexec images, disko and flakes.
+<center><i>exclusive image from our correspondent inside the hetzner auction farm</i></center>
 
-> the whole process can be done quickly and automatically with tools like nixos-everywhere or disko-install but for
-the sake of this guide I will show you how to do it manually, so you can understand every pieces and feel more comfortable
-with the entire process.
+However, these lower prices come with limitations: you can't use custom images, you lack *stable* console access, and you can't boot from custom images through the rescue system. These present some challenges (especially the unreliable console access), but nothing you can't overcome using kexec images, disko, and remote unlocking our luks partition (yeah very cool).
 
-## The jail of few supported distro images and kexec as the key
+> 💡 this whole process can be done quickly and automatically with tools like [nixos-everywhere](https://github.com/nix-community/nixos-anywhere) or [disko-install](https://github.com/nix-community/disko/blob/master/docs/disko-install.md). Indeed my suggestion is to use those tools instead of this "hard way" but for the sake of this guide I will show you how to do it manually, so you can understand every piece and feel more comfortable with the entire process.
 
-Hetzner auction servers like several other cloud provider only give you a few supported distro images to choose from.
-Most of the time they are the most popular ones like ubuntu, debian and centos, but very few of them support nixos.
+### The jail of few supported distro images and kexec
 
-This is not a real problem for us since we use a magical super power: kexec.
-Kexec is a Linux kernel feature that allows you to load and execute a new kernel from the currently running kernel
-directly in memory. This will let us to boot to the nixos-installer image from another distro running on the server.
+Hetzner auction servers, like several other cloud providers, only give you a few supported distro images to choose from.
+Most of the time they are the most popular ones like ubuntu, debian, and centos, but very few of them support nixos.
 
-But let's start from the beginning, the first step is install any hetzner supported distro image and upload our ssh key to it.
-Personally I chose archlinux but you can choose any of the supported ones.
+This isn't really a problem since we are going to use a magical super power: `kexec`.
+Kexec is a linux kernel feature that allows you to load and execute a new kernel from the currently running kernel directly in memory.
+This will let us boot to the nixos-installer image from within another distro already running on the server.
+
+> ⚠️ be aware that `kexec` has a few limitations: it only works without secure boot enabled, and you need at least 4GB of memory since the nix store is mounted as tmpfs.
+
+But let's start from the beginning: the first step is to install any hetzner-supported distro image and upload our ssh key to it.
+Personally I chose archlinux, but you can choose any of the supported ones.
 
 ### Key exchange and kexec execution
 
-Once you machine is ready and you have access to it, we need to upload your ssh key to it.
+Once your machine is ready and you have access to it, you need to upload your ssh key to it.
 
-> you can skip this step if you already uploaded your ssh key in the cloud provider console while rebuilding the server
+> 💡 you can skip this step if you already uploaded your ssh key in the cloud provider console while reinstalling the server
 
 ```bash
 ssh-copy-id root@<your-server-ip>
@@ -87,43 +81,45 @@ machine will boot into nixos in 6s...
 + exec
 ```
 
-this will load in memory the nixos installer image and execute it, in few seconds if everything went wellyou will be able to ssh
-into the server again and this time you will be able to execute any nixos command:
+this load the nixos installer image into memory and execute it. In a few seconds, if everything went well, you will be able to ssh into the server again and this time you will be able to execute any nixos command:
 
 ```bash
 $ ssh root@<your-server-ip>
 Last login: Mon May  5 21:49:05 2025
 
-[root@nixos-installer:~]# nix --version
+$ nix --version
 nix (Nix) 2.24.14
 ```
 
-Great! our journey has just started
+great! our journey has just started
 
 ## Disko declarative disk partitioning
 
-The disko repo announces itself as *declarative disk partitioning and formatting using nix*.
-However, it is much more than that, not only it will automatically partition and format your disks, but the disko configuration can be
-sourced from a nix flake, so you can use it as a base for your nixos configuration and use it to build your whole system without
-needing to manually add the partitions, filesystems and boot setup to your nixos configuration.
+The disko repo describes itself as *declarative disk partitioning and formatting using nix*.
 
-The best way to start familiarizing with disko is to take a look of one of the [examples](https://github.com/nix-community/disko/tree/master/example) in the repo.
-I will give you a couple of examples during this installation and we are going to explain them line by line.
+However, it is much more than that: not only will it automatically partition and format your disks, but the disko configuration can be sourced from a nix flake, so you can use it as a base for your nixos configuration, and use it to build your whole system without needing to manually add the partitions, filesystems, and boot setup to your nixos configuration.
 
-But before that we need something to write our iac configuration so let's install vim (or any other editor you prefer):
+The best way to start familiarizing with disko is to take a look at one of the [examples](https://github.com/nix-community/disko/tree/master/example) in the repo.
+I will give you a couple of examples during this installation and we will explain them line by line.
 
-```bash
-nix --extra-experimental-features "nix-command flakes" shell nixpkgs#vim
-```
-
-Now let's create a `disko.nix` file in the current directory:
+But before that we need something to write our iac configuration, so let's install vim (or any other editor you prefer):
 
 ```bash
-vim disko.nix
+$ nix shell nixpkgs#vim #or nano/emacs, what you prefer
 ```
 
-Before showing the disko configuration another quick note about the heztner auction server: most of them have at least 2 disks, the first
-disko example I'm going to show you is for a server with 2 disks, the second one is for a generic server with only one disk.
+> ⚠️ if you use the community `kexec` image, flakes is already enabled by default. From now on i will take that for granted, if you are instead using the nixos-installer image, just add `--extra-experimental-features "nix-command flakes"` before each command. For instance, `nix flake check` will become `nix --extra-experimental-features "nix-command flakes" flake check`
+
+Now let's create and edit a `disko.nix` file in the current directory:
+
+```bash
+$ vim disko.nix
+```
+
+Before showing the disko configuration, another quick note about the hetzner auction server: most have at least two disks.
+
+The first disko example I'll show you will use a single disk to keep it simpler and easier to understand.
+The second will show the proper hetzner multiple disk configuration.
 
 ```nix
 let
@@ -204,7 +200,7 @@ in
 }
 ```
 
-If feels a lot, don't worry, let's break it down:
+If feels a lot, don't worry, let's break it down.
 
 ### Let section
 
@@ -254,24 +250,20 @@ to keep at least the `compress=zstd` and `ssd` options.
     [...]
 ```
 
-
 The `disk.devices.disk` section is where we define the disks and partitions that we are going to use for our installation.
-In this case I'm going to create a disk with 3 partitions, the first two will be used for boot and the last one for the root encrypted
-filesystem.
+This example that you can see here I made it on purpose to be the most generic *universal* layout you can re-use across servers or cloud providers, regardless of boot mode.
+That's why we are going to create a disk with 3 partitions, the first two will be used for boot (with both `EF02` and `EF00` to support both legacy and uefi) and the last one for the root encrypted filesystem.
 
-> do not forget to change the `/dev/sda` to the correct device name for your server, you can use the `lsblk` command to check it.
+> 🔁 do not forget to change `/dev/sda` to the correct device name for your server, you can use the `lsblk` command to check it. In this guide I will always use `/dev/sda` since I'm repeating the installation on a local vm (to write this guide) but you need to change all the occurrences with your main disk (or disks). Don't worry, I'll mention it all the time.
 
-Again a note about hetzner auction servers, afaik they do not need a efi partition since there do not support uefi booting by default,
-but I suggest to create it anyway and use it as boot partition, just in case you want to use it in the future or
-if you want to use the same layout for a different cloud provider.
-If you are uncertain about if your server supports uefi booting or not, you can use the efibootmgr command to check it:
+A note about hetzner auction servers: as far as I know, they do not need an efi partition since they do not support uefi booting by default. In general, if you are uncertain about whether your server supports uefi booting or not, you can use the `efibootmgr` command to check it:
 
 ```bash
 nix shell nixpkgs#efibootmgr
 efibootmgr
 ```
-If you see a list of boot entries with the `BootOrder` and `BootCurrent` fields, it means that your server supports uefi booting, if
-you see an error like `EFI variables are not supported on this system` it means that your server does not support uefi booting.
+If you see a list of boot entries with the `BootOrder` and `BootCurrent` fields, it means that your server supports uefi booting.
+If you see an error like `EFI variables are not supported on this system`, it means that your server does not support uefi booting.
 
 ### Disk section: luks
 
@@ -291,32 +283,28 @@ you see an error like `EFI variables are not supported on this system` it means 
                   allowDiscards = true;
                 };
 ```
-
 The luks section is where we define the encrypted partition that we are going to use for our root filesystem.
 Now here we can notice a couple of important settings:
 
-- the `extraFormatArgs` option is used to pass additional arguments to the `cryptsetup` command, in this case we are using:
-  - `--type luks1` because afaik grub does not have the full support for luks2 yet, so just in case we are going to force the old
-  (but stable) version
-  - `--iter-time 1000` is used to set the time in milliseconds that luks will wait before trying to unlock the partition, this is useful
-  to avoid brute force attacks, but it will also slow down the unlocking process, so made your choice based on your needs.
+- The `extraFormatArgs` option is used to pass additional arguments to the `cryptsetup` command. In this case, we are using:
+  - `--type luks1` because as far as I know grub does not have full support for luks2 yet, so, just in case, we are going to force the old (but stable) version.
+  - `--iter-time 1000` is used to set the time in milliseconds luks will use for key derivation. This helps avoid brute force attacks but also slows down unlocking, so make your choice based on your needs.
 
-- `passwordFile` is the file that contains the password for the luks partition, in the setup phase
-  will be passed to the `cryptsetup` command. It's up to you to choose to generate it or not.
-  for the sake of this guide I will just create a random password and store it in the `/tmp/pass`:
+- `passwordFile` is the file that contains the password for the luks partition. During setup, it will be passed to the `cryptsetup` command. It's up to you whether to generate it or not.
+  For the sake of this guide, I will just create a random password and store it in `/tmp/pass`:
   ```bash
   dd if=/dev/urandom bs=1 count=32 | base64 > /tmp/pass
   ```
-  obv let's take a note of the password and store it in a safe place
+  obviously, let's take note of the password and store it in a safe place.
 
 
 - `additionalKeyFiles` is a list of additional key files that will be used to unlock the luks partition,
    in this case we are going to create a random key so we can backup it in another place and
-   never loose the access to our data. To do so let's use the classic dd command:
+   never lose the access to our data. To do so let's use the classic dd command:
    ```bash
    dd if=/dev/urandom of=/nixos-enc.key bs=4096 count=1
    ```
-   again do not forget to copy it somewhere safe
+   again do not forget to copy it somewhere safe.
 
 
 ### Disk section: btrfs
@@ -345,16 +333,17 @@ Now here we can notice a couple of important settings:
                 };
 ```
 
-More we can see the content with type `btrfs` and the subvolumes that we are going to create, this list should be straightforward
-if you are familiar with btrfs, but in case you are not we are going to create 4 subvolumes, one for the whole root filesystem,
-one for the home directories (even if in a server you might not need it), one for the nix store and finally one for data (in my case
-it will be for cri-o and kubernetes data).
-It's up to you to choose the subvolumes you want to create, but I suggest to keep at least the root and the nix store ones.
+Here we can see the content with type `btrfs` and the subvolumes that we are going to create. This list should be straightforward if you are familiar with btrfs, but in case you are not, we are going to create 4 subvolumes: one for the whole root filesystem, one for the home directories (even if on a server you might not need it), one for the nix store, and finally one for data (in my case, it will be for cri-o and kubernetes data).
+It's up to you which subvolumes to create, but I suggest keeping at least the root and nix store ones.
+
+> 💡 Be aware that this is not the supreme fully encrypted setup, since the `/boot` partition is not encrypted,
+an attacker could theoretically modify the bootloader and gain access to the system. But it's a good compromise
+since our lacks of stable console access and we need to be able to unlock the luks partition remotely.
+In your laptop/desktop I suggest to use a full disk encryption setup, which is my base setup for all my personal machines.
 
 ### Disko example with multiple disks
 
-Like I said now that we familiarized with the disko syntax, let's take a look at a more complex example with multiple disks that will be
-the base for a hetzner auction server since most of them have at least 2 disks.
+Like I said, now that we are familiarized with the disko syntax, let's take a look at a more complex example with multiple disks, which will be the base for a hetzner auction server, since most of them have at least 2 disks.
 
 <details>
 <summary><b>multiple disks raid disko example, click to show</b></summary>
@@ -485,46 +474,25 @@ in
 ```
 </details>
 
-the only difference with the previous example is that we are using 2 disks and we are creating a software raid1 array for the luks partition,
-using mdadm, all the rest is the same.
+The only difference from the previous example is that we are using 2 disks and creating a software raid1 array for the luks partition, using `mdadm`, all the rest is the same.
 
-## Running disko
+### Running disko
 
 Now it's time to see our configuration shine and run disko to partition and format our disks.
 
-Before continue, once again, be sure that:
-- you are using the correct device name for your disks (`/dev/sda` or `/dev/nvme0n1` or whatever), if you are not sure use the `lsblk` command to
-  check it
-- you have created the password file and the additional key file and you have copied them somewhere safe
-- you are running it in the right machine :D (obv will be a distruptive action)
+Before continuing, once again, be sure that:
+- you are using the correct device name for your disks (`/dev/sda`, `/dev/nvme0n1`, or whatever). If you are not sure, use the `lsblk` command to check it
+- you have created the password file and the additional key file and copied them somewhere safe (`scp` it's your friend)
+- you are running this on the right machine 😨 (obviously, this will be a disruptive action)
 
-let's finally run our disko command:
+Let's finally run our disko command:
 
 ```bash
-$ nix --experimental-features "nix-command flakes" run github:nix-community/disko/latest -- --mode destroy,format,mount disko.nix
+$ nix run github:nix-community/disko/latest -- --mode destroy,format,mount disko.nix
 disko version 1.12.0
 [..]
 ```
-
-```bash
-$ nix store gc
-1895 store paths deleted, 1178.76 MiB freed
-```
-
-however to avoid "no space left on device" on low memory vps you can do the same (even with a slight older disko version) with:
-
-```bash
-$ nix-shell -p disko
-this path will be fetched (0.03 MiB download, 0.14 MiB unpacked):
-  /nix/store/rsynqyw1kzprsifhlr39k396m83sskpl-disko-1.9.0
-copying path '/nix/store/rsynqyw1kzprsifhlr39k396m83sskpl-disko-1.9.0' from 'https://cache.nixos.org'...
-$ disko --mode disko disko.nix
-disko version 1.9.0
-[..]
-```
-
-you should see several output lines around partitioning and formatting the disks, and don't worry if you receive an error (ex forgot to add the password file),
-you can re-run disko multiple times, if you are uncertain about the outcome you can always check the disko command return with
+You should see a confirmation input and several output lines around partitioning and formatting the disks(see below), and don’t worry if you receive an error (for isntance you forgot to add the password file) 'cause you can re-run disko multiple times. If you are uncertain about the outcome, you can always check the disko command’s return with `echo $?`:
 
 ```bash
 [..]
@@ -538,7 +506,7 @@ $ echo $?
 0
 ```
 
-if everything went well you should see the following output from lsblk:
+if everything went well you should see the following output from `lsblk`:
 
 ```bash
 $ lsblk /dev/sda
@@ -555,55 +523,58 @@ sda         8:0    0    8G  0 disk
                                     /mnt
 ```
 
-as you can see the luks partition is mounted in `/mnt/nix` and the other subvolumes are mounted in their respective mountpoints under the `/mnt` directory.
+As you can see, the luks partition is mounted in `/mnt/nix`, and the other subvolumes are mounted in their respective mountpoints under the `/mnt` directory.
+
+Now, before continuing with the nixos installation, if you are running on a low memory machine, it’s better to exit the nix shells we created (`ctrl+d` or type `exit`) and reclaim some memory with:
+
+```bash
+$ nix store gc
+1895 store paths deleted, 1178.76 MiB freed
+```
 
 ## Nixos installation
 
 Finally we can start the nixos installation phase.
 
-Like I mention I'm going to show how to do already with flakes, but in case of low memory vps you can use the standard method, the configs options
-will be exactly the same.
-
 ### Generate
 
-Ok let's use the `nixos-generate-config` command to generate automatically the system configuration.
+Ok, let's use the `nixos-generate-config` command to automatically generate the system configuration.
 
-One of the greatest thing of disko is that by sourcing the disko configuration we don't need to add the partitions and filesystems, it wil take
-care of it for us.
-If like me you did already a nixos installation with btrfs probably you the bug with the `nixos-generate-config` command that will not generate
-the subvolumes mount options, so you will need to add them manually. Disko will take care of it and also configure the bootloader/luks parts for you.
+One of the greatest things about disko is that by sourcing the disko configuration, we don't need to add the partitions and filesystems manually, it will take care of that for us.
+
+If, like me, you’ve already done a nixos installation with btrfs, you probably know the bug with the `nixos-generate-config` command that doesn’t generate the subvolumes mount options, so you need to add them manually.
+disko handles this and also configures the bootloader and luks parts for you.
 
 Enough introduction, let's run the command:
 
 ```bash
-nixos-generate-config --no-filesystems --root /mnt
+$ nixos-generate-config --no-filesystems --root /mnt
 writing /mnt/etc/nixos/hardware-configuration.nix...
 writing /mnt/etc/nixos/configuration.nix...
 For more hardware-specific settings, see https://github.com/NixOS/nixos-hardware.
 ```
 
-this will generate the hardware configuration and the system configuration files, we are going to modify them later.
+This will generate the hardware configuration and the system configuration files, which we will modify later.
 
-Now let's copy the disko configuration file to the `/mnt/etc/nixos` directory and jump into it:
+Now, let's copy the disko configuration file to the `/mnt/etc/nixos` directory and jump into it:
 
 ```bash
-cp disko.nix /mnt/etc/nixos/
-cd /mnt/etc/nixos
+$ cp disko.nix /mnt/etc/nixos/
+$ cd /mnt/etc/nixos
 ```
 
 ### Flake
 
-Like I said before, I'm going to show you how to do it with flakes, so let's create a flake.nix file in the `/mnt/etc/nixos` directory:
+Like I said before I'm going to show you how to do it with flakes, so let's create a flake.nix file in the `/mnt/etc/nixos` directory:
 
 ```bash
-vim flake.nix
+$ vim flake.nix
 ```
 
-> Another disclamer: if you already your own nix dotfiles with your flake you already know what to do. I'm showing this example for
-the ones that are not familiar with it and want to start using nix directly with flakes from the beginning. The example will be super simple
-and mono-system but again it's a precise choice to show you how to do it.
+> 💡 yet another disclaimer: if you already have your own nix dotfiles with your flake, you already know what to do.
+I'm showing this example for those who are not familiar with it and want to start using nix directly with flakes from the beginning. The example will be super simple and mono-system, but again it's a precise choice to share how to start with it.
 
-one example base flake will be:
+our example basic flake:
 
 ```nix
 {
@@ -631,24 +602,21 @@ one example base flake will be:
 
 ```
 
-here we need to notice a couple of things:
+Here we need to notice a couple of things:
 
-- we have, apart the classic nixpkgs stable branch, also the disko input that will be used to
-  import the disko module in the nixos configuration
+- Besides the classic nixpkgs stable branch, we also have the disko input, which will be used to import the disko module in the nixos configuration.
 
-- we are importing directly in the flake the `disko.nix` file, you can also import it in the
-  `configuration.nix` file, in this example will be there just to be more explicit.
-
+- We are importing the `disko.nix` file directly in the flake; you can also import it in the `configuration.nix` file. In this example, it is imported here just to be more explicit.
 
 ### Bootlooader settings
 
-Ok so we got our flake, we are sourcing the disko module and config, what else we need?
+Ok, so we have our flake, and we are sourcing the disko module and config. What else do we need?
 
-We need to add only one configuration that our disko config will not provide for us, the grub device(s).
+First of all we need add one configuration that our disko config will not provide for us: the grub device(s).
 
-> In case of uefi booting you also need to add the `boot.loader.efi.canTouchEfiVariables = true;` option.
+> ⚠️ In case of uefi booting, you also need to add the `boot.loader.efi.canTouchEfiVariables = true;` option.
 
-let's open the `configuration.nix` file and add the following lines:
+Let’s open the `configuration.nix` file and add the following lines:
 
 ```nix
   boot.loader.grub = {
@@ -658,8 +626,7 @@ let's open the `configuration.nix` file and add the following lines:
   };
 ```
 
-in case like my hetnzer auction server you have multiple disks, you can add the `devices` option to specify
-multiple devices, like so:
+In case, like my hetzner auction server, you have multiple disks, you can add the `devices` option to specify multiple devices, like so:
 
 ```nix
   boot.loader.grub = {
@@ -669,13 +636,11 @@ multiple devices, like so:
   };
 ```
 
-### Remote unblocking of luks partition via ssh
+### Remote unlocking of luks partition via ssh
 
-Finally since like I explained before, the hetzner auction servers do not have a stable console access, we
-need to find a way to unlock the luks partition remotely via ssh before the system boots.
+Finally, since, as I explained before, hetzner auction servers do not have stable console access, we need to find a way to unlock the luks partition remotely via ssh before the system boots. I'm used to unlocking it via the remote console when I restart my server, but in this case, we are going to unlock it with a magic temporary ssh server.
 
-To do so we need to add some configuration to the `boot.initrd` section:
-
+To do so, we need to add some configuration to the `boot.initrd` section:
 
 ```nix
   boot.kernelParams = [ "ip=dhcp" ];
@@ -699,7 +664,7 @@ To do so we need to add some configuration to the `boot.initrd` section:
 Let's explain it line by line:
 - `boot.kernelParams = [ "ip=dhcp" ];` this will set the kernel parameters to use dhcp to get an ip address
 - `boot.initrd.availableKernelModules = [ "e1000e" ];` this will load the kernel module for the network interface.
-   **important**: you need to change it to the correct module for your network interface, to do so you can run the following command: `lspci -v | grep -iA8 'network\|ethernet'`
+   ⚠️ **important**: you need to change it to the correct module for your network interface, to do so you can run the following command: `lspci -v | grep -iA8 'network\|ethernet'`
    and check the `Kernel driver in use` line, in my case it was `e1000e`, but it could be different for you:
    ```bash
     $ lspci -v | grep -iA8 'network\|ethernet'
@@ -711,8 +676,7 @@ Let's explain it line by line:
         Kernel driver in use: e1000e
         Kernel modules: e1000e
    ```
-- the `boot.initrd.network.port` it's where we set the port that the temporary ssh daemon will listen, my suggestion is to use a random not well know port, but for the sake of this guide
-  let's keep it simple as `2222`.
+- the `boot.initrd.network.port` it's sets the port that the temporary ssh daemon will listen, my suggestion is use a random not well know port, but for the sake of this guide let's keep it simple as `2222`.
 
 - `boot.initrd.network.authorizedKeys` is where we put our ssh public key, so we can ssh into the server and unlock the luks partition.
 - `boot.initrd.network.hostKeys` is where we set the path to the ssh host keys that will be used by the temporary ssh daemon, before use it we need to generate them, so let's run the following command:
@@ -725,7 +689,7 @@ Let's explain it line by line:
   The key fingerprint is:
   [...]
   ```
-- `boot.initrd.network.shell` is where we set as shell the `cryptsetup-askpass` command to actally unlock the luks partition.
+- `boot.initrd.network.shell` is where we set as shell the `cryptsetup-askpass` command to actually unlock the luks partition.
 
 ### Ssh deamon configuration
 
@@ -736,20 +700,18 @@ After fixing the remote unlocking we need to setup our standard ssh daemon, so w
     enable = true;
     settings = {
       PermitRootLogin = "yes"; # allow root login via ssh only for the first boot, after that you should disable it
-      PasswordAuthentication = true; # allow password authentication for the first boot, you can create a user with an authorized key and disable it
+      PasswordAuthentication = true; # allow password authentication for the first boot, create a user with an authorized key and disable it
     };
   };
 ```
 
-As you can read from the comment we are going to make it a bit permissive for the first boot, so we can ssh into the server and check that
-everything is working as expected, after that you should disable the root login and password authentication by creating a user with an
-authorized key and set both option to the opposite to endure a more secure configuration (there are so many other option that we can set
-to make it more secure, I may write a follow up guide about it and all the others good security pratices that we can setup).
+As you can read from the comment, we're going to keep the configuration a bit permissive for the first boot so we can SSH into the server and verify that everything is working correctly.
 
+After that, you should disable root login and password authentication by creating a regular user with an authorized SSH key, and then flip both options to harden access. There are many other settings you can enable to improve security. I might write a follow-up guide covering this and other recommended hardening practices.
 
 ### Other basic configuration
 
-Finally to conclude our configuration we can add some basic options to the `configuration.nix` file:
+Finally, to wrap up our configuration, we can add some basic options to the `configuration.nix` file.
 
 ```nix
   networking.hostName = "<myhostname>";
@@ -773,7 +735,7 @@ sake of this guide I will keep it simple and use dhcp.
 
 ### Check the configuration
 
-Before proceeding with the installation, it's a good idea to check the configuration for any misconfiguration:
+Before proceeding with the installation, it's a good idea to check the configuration for any misconfiguration using the `nix flake check` command:
 
 ```nix
 $ nix flake check
@@ -785,27 +747,25 @@ warning: creating lock file '/mnt/etc/nixos/flake.lock':
 • Added input 'nixpkgs':
     'github:nixos/nixpkgs/f09dede81861f3a83f7f06641ead34f02f37597f?narHash=sha256-92vihpZr6dwEMV6g98M5kHZIttrWahb9iRPBm1atcPk%3D' (2025-05-23)
 ```
-
-if everything is ok we should see an output like the one above, basically only creating the flake lock, if we have any error in our configuration we are going to see it here with the offending line number and the error message.
+if everything is ok, we should see an output like the one above, basically only creating the flake lock. if we have any error in our configuration,
+we will see it here with the offending line number and the error message.
 
 ### Install the system
 
 Yeah, we are finally ready to install the system, let's run the following command:
 
 ```bash
-nixos-install --flake .#nixos
+$ nixos-install --flake .#nixos
 ```
 
-we are using `.#nixos` to specify the current directory as the flake and the `nixos` system configuration that we defined in the `flake.nix` file.
-If you are not in the `/mnt/etc/nixos` directory you can use the full path to the flake and the hostname you set in the **flake** `nixosConfigurations` attribute, like so:
+we are using `.#nixos` to specify the current directory as the flake and the `nixos` system configuration defined in the `flake.nix` file.
+If you are not in the `/mnt/etc/nixos` directory, you can use the full path to the flake and the hostname you set in the **flake** `nixosConfigurations` attribute, like so:
 
 ```bash
-nixos-install --flake /mnt/etc/nixos#<myhostname>
+$ nixos-install --flake /mnt/etc/nixos#<myhostname>
 ```
 
-now keep patience, the `nixos-install` command will take a while to complete, it will download all the necessary packages and configure the system.
-
-if everything goes well you should see the following output:
+now keep patience, the `nixos-install` command will take a while to complete, it will download all the necessary packages and configure the system. If everything goes well you should see the following output:
 
 ```bash
 [1/130/262 built, 319 copied (2141.8/2142.7 MiB), 509.0 MiB DL] building system-path:
@@ -827,27 +787,60 @@ installation finished!
 Now we can reboot the server and check if everything is working as expected:
 
 ```bash
-reboot
+$ reboot
 ```
 
 After the reboot, you should be able to ssh into the server using the temporary ssh daemon that we configured before:
 
 ```bash
-ssh -p 2222 -l root <your-server-ip>
+$ ssh -p 2222 -l root <your-server-ip>
 Last login: Sun May 25 16:09:13 2025 from x.x.x.x
 Passphrase for /dev/disk/by-partlabel/disk-main-luks:
 ```
 After entering the passphrase for the luks partition, you should be able to ssh into the server normally (give it a few seconds to start the ssh daemon):
 
 ```bash
-ssh -p 2222 -l root <your-server-ip>
+$ ssh -l root <your-server-ip>
 ```
 
-Perfect! now you can start to add (as iac) you new user with the authorized key, disable the root login and password authentication, and setup the rest of your system as you like.
-Like I said before, if I will find the time I will write a follow up guide about the best security practices, wireguard vpn, and other useful things that you can do to secure your server and make it more reliable.
+And if you can login into your system everything went well! :)
 
-## Bonus point: backup your luks header
+Now you can start to add (as iac) your new user with the authorized key, disable the root login and password authentication, and set up the rest of your system as you like.
 
-```bash
-cryptsetup luksHeaderBackup /dev/sda3 --header-backup-file header-backup-hetzner
-```
+Like i said before, if i find the time i will write a follow up guide about the best security practices, wireguard vpn, and other useful things that you can do to secure your server and make it more reliable
+
+## Conclusion
+
+### Bonus points
+
+Let me share some final tips:
+
+- backup your luks header to avoid losing access to your encrypted data in case of disk corruption
+  (it's very rare but it could happen especially with luks1):
+  ```bash
+  $ cryptsetup luksHeaderBackup /dev/sda3 --header-backup-file header-backup
+  ```
+  and save it somewhere safe.
+- use `pass` or any other cli to unblock your luks partition in one command:
+  ```bash
+  $ pass show vps/xxx/luks | ssh -p 2222 -l root <your-server-ip>
+  ```
+- if you change any networking settings in your configuration always try it with
+  ```bash
+  $ nixos-rebuild test --flake .#nixos
+  ```
+  to avoid locking yourself out of the server (in case a reboot will fix it by booting with the previous generation).
+- if you already have a multi-system nix flake configuration you can rebuild your server remotely with:
+  ```bash
+  $ nixos-rebuild switch --flake .#nixos --target-host <myuser@myhost> --use-remote-sudo
+  ```
+  and if needed even build the system in another host with `--build-host <myuser@myhost>` option.
+
+### Final thoughts
+
+I hope this guide was helpful and you learned something new about nixos, disko, luks and kexec.
+
+Again like I said the whole process can be automated with tools like [nixos-everywhere](https://github.com/nix-community/nixos-anywhere),
+you don't need to do each step manually all the time, but knowing how to do it will help you to troubleshoot any issue that may arise during the installation process.
+
+Happy Nixing!
