@@ -259,8 +259,8 @@ That's why we are going to create a disk with 3 partitions, the first two will b
 A note about hetzner auction servers: as far as I know, they do not need an efi partition since they do not support uefi booting by default. In general, if you are uncertain about whether your server supports uefi booting or not, you can use the `efibootmgr` command to check it:
 
 ```bash
-nix shell nixpkgs#efibootmgr
-efibootmgr
+$ nix shell nixpkgs#efibootmgr
+$ efibootmgr
 ```
 If you see a list of boot entries with the `BootOrder` and `BootCurrent` fields, it means that your server supports uefi booting.
 If you see an error like `EFI variables are not supported on this system`, it means that your server does not support uefi booting.
@@ -825,7 +825,7 @@ Let me share some final tips:
   ```bash
   $ pass show vps/xxx/luks | ssh -p 2222 -l root <your-server-ip>
   ```
-- if you change any networking settings in your configuration always try it with
+- if you change any networking settings in your configuration always try it with `test`:
   ```bash
   $ nixos-rebuild test --flake .#nixos
   ```
