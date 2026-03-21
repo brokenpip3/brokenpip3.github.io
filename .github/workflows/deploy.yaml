@@ -25,13 +25,7 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
-      - uses: DeterminateSystems/nix-installer-action@e50d5f73bfe71c2dd0aa4218de8f4afa59f8f81d # v16
-        with:
-          diagnostic-endpoint: ""
-      # https://determinate.systems/posts/magic-nix-cache-free-tier-eol/
-      #- uses: DeterminateSystems/magic-nix-cache-action@v8
-      #  with:
-      #    diagnostic-endpoint: ""
+      - uses: NixOS/nix-installer-action@228d8a956062db04221c97c2794ea443194824aa
       - name: nix checks
         run: nix flake check
       - name: nix build
