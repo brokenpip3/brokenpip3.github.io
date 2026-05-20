@@ -25,7 +25,10 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
-      - uses: NixOS/nix-installer-action@228d8a956062db04221c97c2794ea443194824aa
+      - uses: NixOS/nix-installer-action@6b8548fe06acfb0155a50ab5d561accb215764cc
+        with:
+          extra-conf: |
+            experimental-features = nix-command flakes
       - name: nix checks
         run: nix flake check
       - name: nix build
